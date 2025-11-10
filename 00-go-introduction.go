@@ -1,17 +1,20 @@
-// Go: 静态类型与类型推断
 package main
 
 import "fmt"
 
 func main() {
-	age := 30                                                  // int (类型推断)
-	name := "Alice"                                            // string (类型推断)
-	isActive := true                                           // bool (类型推断)
-	scores := []int{85, 92, 78}                                // int 切片
-	person := map[string]interface{}{"name": "Bob", "age": 25} // map
+	temperature := 25
 
-	// Go 没有像 JavaScript 那样的 typeof，但可以使用反射
-	fmt.Printf("age 类型: %T\n", age)       // int
-	fmt.Printf("name 类型: %T\n", name)     // string
-	fmt.Printf("scores 类型: %T\n", scores) // []int
+	if temperature > 30 {
+		fmt.Println("天气很热！")
+	} else if temperature > 20 {
+		fmt.Println("天气温暖。")
+	} else {
+		fmt.Println("天气寒冷。")
+	}
+
+	// Go 需要显式的布尔表达式
+	if temperature > 0 {
+		fmt.Println("温度是正数")
+	}
 }
