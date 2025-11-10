@@ -1,13 +1,17 @@
-package main // 声明包
+// Go: 静态类型与类型推断
+package main
 
-import (
-	"fmt"     // 标准库包
-	"strings" // 另一个标准库包
-)
+import "fmt"
 
-func main() { // main 函数：程序的入口点
+func main() {
+	age := 30                                                  // int (类型推断)
+	name := "Alice"                                            // string (类型推断)
+	isActive := true                                           // bool (类型推断)
+	scores := []int{85, 92, 78}                                // int 切片
+	person := map[string]interface{}{"name": "Bob", "age": 25} // map
 
-	message := "Hello, World golang!"     // 声明变量
-	fmt.Println(message)                  // 打印变量
-	fmt.Println(strings.ToUpper(message)) // 调用函数
+	// Go 没有像 JavaScript 那样的 typeof，但可以使用反射
+	fmt.Printf("age 类型: %T\n", age)       // int
+	fmt.Printf("name 类型: %T\n", name)     // string
+	fmt.Printf("scores 类型: %T\n", scores) // []int
 }
