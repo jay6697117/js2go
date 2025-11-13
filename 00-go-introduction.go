@@ -66,11 +66,27 @@ func greet(name string) string {
 }
 
 // 带多个返回值的函数
-func divide(a, b float64) (float64, error) {
-	if b == 0 {
+// 功能：执行除法运算，并返回结果和可能的错误
+// 参数：
+//   - a: 被除数（float64类型）
+//   - b: 除数（float64类型）
+//
+// 返回值：
+//   - 第一个返回值：除法运算的结果（float64类型）
+//   - 第二个返回值：错误信息（error类型，如果没有错误则为nil）
+//
+// 注意：Go语言支持多返回值，这是处理错误的惯用方式
+func divide(dividend float64, divisor float64) (quotient float64, errorMessage error) {
+	// 检查除数是否为零，防止除零错误
+	if divisor == 0 {
+		// 返回零值和错误信息
+		// fmt.Errorf 用于创建格式化的错误对象
 		return 0, fmt.Errorf("除零错误")
 	}
-	return a / b, nil
+	// 执行除法运算并返回结果，错误为nil表示操作成功
+	quotient = dividend / divisor
+	errorMessage = nil
+	return quotient, errorMessage
 }
 
 // 带命名返回值的函数
