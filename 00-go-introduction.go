@@ -78,9 +78,12 @@ func divide(a, b float64) (float64, error) {
 }
 
 // 带命名返回值的函数
+// 命名返回值会在函数开始时被初始化为零值
 func multiply(a, b int) (result int) {
+	// 直接对命名返回值 result 赋值
 	result = a * b
-	return // 裸返回
+	// 裸返回：return 后不需要指定返回值，自动返回 result
+	return
 }
 
 // 带可变参数的函数（类似剩余参数）
