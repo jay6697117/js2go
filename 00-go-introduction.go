@@ -66,11 +66,15 @@ func greet(name string) string {
 }
 
 // 带多个返回值的函数
+// divide 执行除法运算
+// 参数: a - 被除数, b - 除数
+// 返回: 商(float64) 和 错误(error)
+// 当除数为0时返回错误，否则返回nil
 func divide(a, b float64) (float64, error) {
 	if b == 0 {
-		return 0, fmt.Errorf("除零错误")
+		return 0, fmt.Errorf("除零错误") // 返回零值和错误
 	}
-	return a / b, nil
+	return a / b, nil // 返回计算结果和nil表示无错误
 }
 
 // 带命名返回值的函数
