@@ -154,3 +154,61 @@
 // 	// 计算 5 + 3 = 8
 // 	fmt.Println(add(5, 3))
 // }
+
+// Go: 数据类型和结构
+package main
+
+import "fmt"
+
+func main() {
+	// 基本类型
+	var number int = 42
+	var text string = "Hello"
+	var boolean bool = true
+
+	// 数组（固定大小）
+	var array [5]int = [5]int{1, 2, 3, 4, 5}
+	// [4]interface{} 表示一个长度固定为 4 的数组，元素类型为 interface{}（可以容纳任意类型）。
+	var mixedArray [4]interface{} = [4]interface{}{1, "hello", true, nil}
+
+	// 切片（动态数组）
+	slice := []int{1, 2, 3, 4, 5}
+	slice = append(slice, 6) // 添加元素
+
+	// Map
+	// map[string]interface{} // Go 的内建映射类型（类似于 JS 的对象或 Map）。
+	// string // 表示 key 必须是字符串类型。
+	// interface{} // 表示 value 可以是任意类型（因为 interface{} 是空接口，任何类型都实现了它）。
+	object := map[string]interface{}{
+		"name":     "Alice",
+		"age":      30,
+		"isActive": true,
+	}
+
+	// 结构体（类似对象但有定义的结构）
+	type Person struct {
+		Name     string
+		Age      int
+		IsActive bool
+	}
+
+	person := Person{
+		Name:     "Bob",
+		Age:      25,
+		IsActive: true,
+	}
+
+	fmt.Printf("数组长度: %d\n", len(array))
+	fmt.Printf("切片长度: %d\n", len(slice))
+	fmt.Printf("Map 键: %v\n", getMapKeys(object))
+	fmt.Printf("Person: %+v\n", person)
+}
+
+// 辅助函数获取 map 键
+func getMapKeys(m map[string]interface{}) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}
