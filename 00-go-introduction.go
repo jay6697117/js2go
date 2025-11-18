@@ -155,97 +155,132 @@
 // 	fmt.Println(add(5, 3))
 // }
 
-// Go: 数据类型和结构
+// // 4.Go: 数据类型和结构
+// package main
+
+// import "fmt"
+
+// func main() {
+// 	// 基本类型
+// 	var number int = 42
+// 	var text string = "Hello"
+// 	var boolean bool = true
+// 	fmt.Printf("基本类型 - number: %v, text: %v, boolean: %v\n", number, text, boolean)
+
+// 	// 数组（固定大小）
+// 	var array [5]int = [5]int{1, 2, 3, 4, 5}
+// 	// [4]interface{} 表示一个长度固定为 4 的数组，元素类型为 interface{}（可以容纳任意类型）。
+// 	var mixedArray [4]interface{} = [4]interface{}{1, "hello", true, nil}
+// 	fmt.Printf("混合数组: %v\n", mixedArray)
+
+// 	// 切片（动态数组）
+// 	slice := []int{1, 2, 3, 4, 5}
+// 	slice = append(slice, 6) // 添加元素
+
+// 	// Map
+// 	// map[string]interface{} // Go 的内建映射类型（类似于 JS 的对象或 Map）。
+// 	// string // 表示 key 必须是字符串类型。
+// 	// interface{} // 表示 value 可以是任意类型（因为 interface{} 是空接口，任何类型都实现了它）。
+// 	object := map[string]interface{}{
+// 		"name":     "Alice",
+// 		"age":      30,
+// 		"isActive": true,
+// 	}
+
+// 	// 结构体（类似对象但有定义的结构）
+// 	type Person struct {
+// 		Name     string
+// 		Age      int
+// 		IsActive bool
+// 	}
+
+// 	person := Person{
+// 		Name:     "Bob",
+// 		Age:      25,
+// 		IsActive: true,
+// 	}
+
+// 	fmt.Printf("数组长度: %d\n", len(array))
+// 	fmt.Printf("数组: %v\n", array)
+// 	fmt.Printf("切片长度: %d\n", len(slice))
+// 	fmt.Printf("切片: %d\n", slice)
+// 	fmt.Printf("Map 键: %v\n", getMapKeys(object))
+// 	fmt.Printf("Map: %v\n", object)
+// 	fmt.Printf("Person: %+v\n", person)
+// }
+
+// // getMapKeys 从 map 中提取所有的键并返回一个字符串切片
+// // 功能说明：
+// //
+// //	该函数遍历输入的 map，提取所有键并以字符串切片的形式返回
+// //	适用于需要获取 map 所有键进行进一步处理的场景
+// //
+// // 参数:
+// //
+// //	m: 需要提取键的 map，键类型为 string，值类型为 interface{}（可以是任意类型）
+// //	   - 如果传入 nil map，函数会返回空切片
+// //	   - 如果传入空 map（长度为0），函数也会返回空切片
+// //
+// // 返回值:
+// //
+// //	[]string: 包含 map 中所有键的字符串切片
+// //	         - 键的顺序不保证，因为 Go 的 map 遍历顺序是随机的
+// //	         - 返回的切片长度等于输入 map 的长度
+// //
+// // 时间复杂度: O(n)，其中 n 是 map 中键值对的数量
+// // 空间复杂度: O(n)，需要创建一个新的切片来存储所有键
+// func getMapKeys(m map[string]interface{}) []string {
+// 	// 使用 make 创建切片，第二个参数 0 表示初始长度为 0
+// 	// 第三个参数 len(m) 表示预分配容量为 map 的长度
+// 	// 性能优化：预分配容量避免了切片在 append 过程中的多次内存重新分配
+// 	// 如果不预分配容量，切片会在容量不足时自动扩容（通常是翻倍），可能导致多次内存拷贝
+// 	keys := make([]string, 0, len(m))
+
+// 	// 使用 range 遍历 map，语法：for key, value := range map
+// 	// 这里只需要键，所以省略了值的接收变量（Go 允许这种简化写法）
+// 	// 注意：Go 的 map 遍历顺序是随机的，每次运行可能得到不同的键顺序
+// 	for k := range m {
+// 		// append 函数将键 k 追加到 keys 切片的末尾
+// 		// 由于预分配了足够的容量，这里不会触发切片扩容，性能较好
+// 		keys = append(keys, k)
+// 	}
+
+// 	// 返回包含所有键的切片
+// 	// 调用者可以对返回的切片进行排序、过滤等进一步操作
+// 	return keys
+// }
+
+// 5.Go: 作用域和生命周期
 package main
 
 import "fmt"
 
-func main() {
-	// 基本类型
-	var number int = 42
-	var text string = "Hello"
-	var boolean bool = true
-	fmt.Printf("基本类型 - number: %v, text: %v, boolean: %v\n", number, text, boolean)
+func example() {
+	x := 10 // 函数作用域
 
-	// 数组（固定大小）
-	var array [5]int = [5]int{1, 2, 3, 4, 5}
-	// [4]interface{} 表示一个长度固定为 4 的数组，元素类型为 interface{}（可以容纳任意类型）。
-	var mixedArray [4]interface{} = [4]interface{}{1, "hello", true, nil}
-	fmt.Printf("混合数组: %v\n", mixedArray)
-
-	// 切片（动态数组）
-	slice := []int{1, 2, 3, 4, 5}
-	slice = append(slice, 6) // 添加元素
-
-	// Map
-	// map[string]interface{} // Go 的内建映射类型（类似于 JS 的对象或 Map）。
-	// string // 表示 key 必须是字符串类型。
-	// interface{} // 表示 value 可以是任意类型（因为 interface{} 是空接口，任何类型都实现了它）。
-	object := map[string]interface{}{
-		"name":     "Alice",
-		"age":      30,
-		"isActive": true,
+	if true {
+		y := 20        // 块作用域
+		fmt.Println(x) // 10
+		fmt.Println(y) // 20
 	}
 
-	// 结构体（类似对象但有定义的结构）
-	type Person struct {
-		Name     string
-		Age      int
-		IsActive bool
-	}
-
-	person := Person{
-		Name:     "Bob",
-		Age:      25,
-		IsActive: true,
-	}
-
-	fmt.Printf("数组长度: %d\n", len(array))
-	fmt.Printf("数组: %v\n", array)
-	fmt.Printf("切片长度: %d\n", len(slice))
-	fmt.Printf("切片: %d\n", slice)
-	fmt.Printf("Map 键: %v\n", getMapKeys(object))
-	fmt.Printf("Map: %v\n", object)
-	fmt.Printf("Person: %+v\n", person)
+	fmt.Println(x) // 10
+	// fmt.Println(y) // Error: undefined: y
 }
 
-// getMapKeys 从 map 中提取所有的键并返回一个字符串切片
-// 功能说明：
-//
-//	该函数遍历输入的 map，提取所有键并以字符串切片的形式返回
-//	适用于需要获取 map 所有键进行进一步处理的场景
-//
-// 参数:
-//
-//	m: 需要提取键的 map，键类型为 string，值类型为 interface{}（可以是任意类型）
-//	   - 如果传入 nil map，函数会返回空切片
-//	   - 如果传入空 map（长度为0），函数也会返回空切片
-//
-// 返回值:
-//
-//	[]string: 包含 map 中所有键的字符串切片
-//	         - 键的顺序不保证，因为 Go 的 map 遍历顺序是随机的
-//	         - 返回的切片长度等于输入 map 的长度
-//
-// 时间复杂度: O(n)，其中 n 是 map 中键值对的数量
-// 空间复杂度: O(n)，需要创建一个新的切片来存储所有键
-func getMapKeys(m map[string]interface{}) []string {
-	// 使用 make 创建切片，第二个参数 0 表示初始长度为 0
-	// 第三个参数 len(m) 表示预分配容量为 map 的长度
-	// 性能优化：预分配容量避免了切片在 append 过程中的多次内存重新分配
-	// 如果不预分配容量，切片会在容量不足时自动扩容（通常是翻倍），可能导致多次内存拷贝
-	keys := make([]string, 0, len(m))
-
-	// 使用 range 遍历 map，语法：for key, value := range map
-	// 这里只需要键，所以省略了值的接收变量（Go 允许这种简化写法）
-	// 注意：Go 的 map 遍历顺序是随机的，每次运行可能得到不同的键顺序
-	for k := range m {
-		// append 函数将键 k 追加到 keys 切片的末尾
-		// 由于预分配了足够的容量，这里不会触发切片扩容，性能较好
-		keys = append(keys, k)
+// Go 中的闭包
+func createCounter() func() int {
+	count := 0
+	return func() int {
+		count++
+		return count
 	}
+}
 
-	// 返回包含所有键的切片
-	// 调用者可以对返回的切片进行排序、过滤等进一步操作
-	return keys
+func main() {
+	example()
+
+	counter := createCounter()
+	fmt.Println(counter()) // 1
+	fmt.Println(counter()) // 2
 }
