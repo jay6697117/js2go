@@ -250,37 +250,144 @@
 // 	return keys
 // }
 
-// 5.Go: 作用域和生命周期
+// // 5.Go: 作用域和生命周期
+// package main
+
+// import "fmt"
+
+// func example() {
+// 	x := 10 // 函数作用域
+
+// 	if true {
+// 		y := 20        // 块作用域
+// 		fmt.Println(x) // 10
+// 		fmt.Println(y) // 20
+// 	}
+
+// 	fmt.Println(x) // 10
+// 	// fmt.Println(y) // Error: undefined: y
+// }
+
+// // Go 中的闭包 (Closure)
+// // ========================================
+// // 闭包是一个函数值（function value），它引用了其函数体之外的变量。
+// // 该函数可以访问并修改这些被引用的变量，换句话说，该函数被"绑定"在了这些变量上。
+// //
+// // createCounter 是一个"工厂函数"，它返回一个闭包。
+// // 函数签名解读：
+// //   - func createCounter()  : 函数名为 createCounter，不接受任何参数
+// //   - func() int            : 返回值类型是"一个不接受参数、返回 int 的函数"
+// func createCounter() func() int {
+// 	// count 是外部函数 createCounter 的局部变量。
+// 	// 正常情况下，当 createCounter 执行完毕后，count 应该被销毁。
+// 	count := 0
+
+// 	// 返回一个匿名函数（Anonymous Function）。
+// 	// 这个匿名函数"捕获"了外部变量 count，形成了一个闭包。
+// 	// 由于 count 被闭包引用，Go 的逃逸分析（Escape Analysis）会将 count 分配到堆上，
+// 	// 使其生命周期延长，即使 createCounter 函数返回后，count 依然存活。
+// 	return func() int {
+// 		// 每次调用这个闭包，都在修改和访问同一个 count 变量。
+// 		// 这就是闭包"保留状态"的核心机制。
+// 		count++
+// 		return count
+// 	}
+// }
+
+// // 使用示例：
+// //   counter1 := createCounter()  // 创建一个计数器，拥有独立的 count (初始为0)
+// //   counter1()                   // 返回 1
+// //   counter1()                   // 返回 2
+// //
+// //   counter2 := createCounter()  // 创建另一个计数器，拥有自己独立的 count
+// //   counter2()                   // 返回 1 (与 counter1 互不影响)
+
+// func main() {
+// 	example()
+
+// 	counter := createCounter()
+// 	fmt.Println(counter()) // 1
+// 	fmt.Println(counter()) // 2
+// }
+
+// 6. Go: 错误处理
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+)
 
-func example() {
-	x := 10 // 函数作用域
-
-	if true {
-		y := 20        // 块作用域
-		fmt.Println(x) // 10
-		fmt.Println(y) // 20
+// 返回错误的函数
+func divide(a, b float64) (float64, error) {
+	if b == 0 {
+		return 0, errors.New("除零错误")
 	}
-
-	fmt.Println(x) // 10
-	// fmt.Println(y) // Error: undefined: y
+	return a / b, nil
 }
 
-// Go 中的闭包
-func createCounter() func() int {
-	count := 0
-	return func() int {
-		count++
-		return count
+// 处理错误的函数
+func safeDivide(a, b float64) {
+	result, err := divide(a, b)
+	if err != nil {
+		fmt.Printf("错误: %v\n", err)
+		return
 	}
+	fmt.Printf("结果: %v\n", result)
+}
+
+// 自定义错误类型
+type ValidationError struct {
+	Field   string
+	Message string
+}
+
+func (e ValidationError) Error() string {
+	return fmt.Sprintf("验证错误 %s: %s", e.Field, e.Message)
+}
+
+// 带自定义错误的函数
+func validateAge(age int) error {
+	if age < 0 {
+		return ValidationError{Field: "age", Message: "年龄不能为负数"}
+	}
+	if age > 150 {
+		return ValidationError{Field: "age", Message: "年龄似乎不现实"}
+	}
+	return nil
+}
+
+// 带错误处理的 HTTP 请求
+func fetchData(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("获取数据失败: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("HTTP 错误! 状态: %d", resp.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("读取响应失败: %w", err)
+	}
+
+	return body, nil
 }
 
 func main() {
-	example()
+	safeDivide(10, 2) // 结果: 5
+	safeDivide(10, 0) // 错误: 除零错误
 
-	counter := createCounter()
-	fmt.Println(counter()) // 1
-	fmt.Println(counter()) // 2
+	if err := validateAge(-5); err != nil {
+		fmt.Printf("验证错误: %v\n", err)
+	}
+
+	if err := validateAge(200); err != nil {
+		fmt.Printf("验证错误: %v\n", err)
+	}
 }
