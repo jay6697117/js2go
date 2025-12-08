@@ -321,10 +321,30 @@ import (
 )
 
 // 返回错误的函数
+// ========================================
+// Go 的错误处理采用"显式返回 error"的设计哲学，而非 try/catch 异常机制。
+// 这使得错误处理路径清晰可见，强制开发者思考每个可能出错的地方。
+//
+// 函数签名解读：
+//   - divide(a, b float64)  : 接收两个 float64 类型的参数
+//   - (float64, error)      : 返回两个值 —— 计算结果和错误信息
+//
+// Go 的 error 是一个内置接口，定义如下：
+//
+//	type error interface {
+//	    Error() string
+//	}
+//
+// 任何实现了 Error() string 方法的类型都可以作为 error 使用。
 func divide(a, b float64) (float64, error) {
+	// 边界条件检查：除数不能为零
 	if b == 0 {
+		// errors.New() 创建一个简单的错误对象
+		// 返回值约定：当发生错误时，通常返回零值（0）和非 nil 的 error
 		return 0, errors.New("除零错误")
 	}
+	// 正常情况：返回计算结果和 nil
+	// nil 表示"没有错误"，这是 Go 错误处理的核心约定
 	return a / b, nil
 }
 
