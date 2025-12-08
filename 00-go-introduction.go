@@ -316,7 +316,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -371,7 +371,7 @@ func fetchData(url string) ([]byte, error) {
 		return nil, fmt.Errorf("HTTP 错误! 状态: %d", resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("读取响应失败: %w", err)
 	}
@@ -389,5 +389,19 @@ func main() {
 
 	if err := validateAge(200); err != nil {
 		fmt.Printf("验证错误: %v\n", err)
+	}
+
+	// 测试 fetchData：访问 GitHub API
+	fmt.Println("\n--- 测试 fetchData ---")
+	data, err := fetchData("https://api.github.com/users/octocat")
+	if err != nil {
+		fmt.Printf("请求失败: %v\n", err)
+	} else {
+		// 打印前 200 个字符（避免输出过长）
+		output := string(data)
+		if len(output) > 200 {
+			output = output[:200] + "..."
+		}
+		fmt.Printf("GitHub API 响应:\n%s\n", output)
 	}
 }
