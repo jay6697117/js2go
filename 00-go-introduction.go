@@ -371,23 +371,24 @@ func safeDivide(a, b float64) {
 }
 
 // 自定义错误类型
-// ========================================
-// 有时简单的 error 字符串不足以描述错误的全部上下文。
-// 我们可以通过定义结构体来实现更复杂的错误类型。
-//
-// ValidationError 结构体包含具体的字段名和错误信息，
-// 这对于表单验证或 API 响应非常有用（可以告诉用户具体是哪里错了）。
+// ValidationError 定义了一个自定义的错误结构体。
+// 在 Go 中，错误通常只是实现了 Error() string 方法的任何类型。
+// 使用结构体可以让我们在错误中携带更多的上下文信息（而不仅仅是一段文本）。
 type ValidationError struct {
-	Field   string // 发生错误的字段名
-	Message string // 具体的错误描述
+	// Field 用于记录验证失败的具体字段名称 (例如: "Email", "Age")
+	Field string
+	// Message 用于记录具体的错误描述信息 (例如: "格式不正确", "必须大于18岁")
+	Message string
 }
 
-// Error 是 error 接口的唯一方法。
-// 通过为 ValidationError 结构体实现 Error() 方法，
-// 我们就隐式地实现了 Go 的内置 error 接口。
-// 这意味着 ValidationError 的实例可以被赋值给任何 error 类型的变量。
+// Error 是 ValidationError 结构体的方法。
+// ***关键点***: 只要实现了这个名为 Error 且返回 string 的方法，
+// ValidationError 就自动满足了 Go 标准库中的 error 接口。
 func (e ValidationError) Error() string {
-	return fmt.Sprintf("验证错误 [%s]: %s", e.Field, e.Message)
+	// fmt.Sprintf 用于格式化字符串。
+	// 这里将字段名和错误信息组合成一个易读的字符串返回。
+	// 当你打印这个错误或调用 .Error() 时，看到的就是这个返回值。
+	return fmt.Sprintf("验证错误 %s: %s", e.Field, e.Message)
 }
 
 // 带自定义错误的函数
