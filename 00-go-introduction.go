@@ -348,20 +348,38 @@ func divide(a, b float64) (float64, error) {
 	return a / b, nil
 }
 
-// 处理错误的函数
+// 错误处理的惯用模式
+// ========================================
+// 在 Go 中，处理错误的正确方式是立即检查返回的 error 对象。
+// 这种模式通常被称为 "Guard Clause"（卫语句）或 "Early Return"（尽早返回）。
+// 它可以避免嵌套层级过深（避免 "箭头型" 代码），使正常逻辑流保持在最左侧。
 func safeDivide(a, b float64) {
+	// 接收多返回值：result 接收计算结果，err 接收可能的错误
 	result, err := divide(a, b)
+
+	// 检查错误：如果 err 不为 nil，说明发生了错误
 	if err != nil {
+		// 处理错误：这里只是简单打印，实际项目中可能需要记录日志、重试或向上传递错误
 		fmt.Printf("错误: %v\n", err)
+		// 发生错误后通常需要中断当前流程（return）
 		return
 	}
+
+	// 如果代码执行到这里，说明 err 为 nil，操作成功
+	// 这被称为 "Happy Path"（快乐路径）
 	fmt.Printf("结果: %v\n", result)
 }
 
 // 自定义错误类型
+// ========================================
+// 有时简单的 error 字符串不足以描述错误的全部上下文。
+// 我们可以通过定义结构体来实现更复杂的错误类型。
+//
+// ValidationError 结构体包含具体的字段名和错误信息，
+// 这对于表单验证或 API 响应非常有用（可以告诉用户具体是哪里错了）。
 type ValidationError struct {
-	Field   string
-	Message string
+	Field   string // 发生错误的字段名
+	Message string // 具体的错误描述
 }
 
 func (e ValidationError) Error() string {
