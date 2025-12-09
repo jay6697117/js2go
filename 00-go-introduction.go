@@ -371,24 +371,13 @@ func safeDivide(a, b float64) {
 }
 
 // 自定义错误类型
-// ValidationError 定义了一个自定义的错误结构体。
-// 在 Go 中，错误通常只是实现了 Error() string 方法的任何类型。
-// 使用结构体可以让我们在错误中携带更多的上下文信息（而不仅仅是一段文本）。
 type ValidationError struct {
-	// Field 用于记录验证失败的具体字段名称 (例如: "Email", "Age")
-	Field string
-	// Message 用于记录具体的错误描述信息 (例如: "格式不正确", "必须大于18岁")
-	Message string
+    Field   string
+    Message string
 }
 
-// Error 是 ValidationError 结构体的方法。
-// ***关键点***: 只要实现了这个名为 Error 且返回 string 的方法，
-// ValidationError 就自动满足了 Go 标准库中的 error 接口。
 func (e ValidationError) Error() string {
-	// fmt.Sprintf 用于格式化字符串。
-	// 这里将字段名和错误信息组合成一个易读的字符串返回。
-	// 当你打印这个错误或调用 .Error() 时，看到的就是这个返回值。
-	return fmt.Sprintf("验证错误 %s: %s", e.Field, e.Message)
+    return fmt.Sprintf("验证错误 %s: %s", e.Field, e.Message)
 }
 
 // 带自定义错误的函数
