@@ -371,13 +371,37 @@ func safeDivide(a, b float64) {
 }
 
 // 自定义错误类型
+// ========================================
+// 结构体 ValidationError 用于表示数据验证失败的情况。
+// 它不仅包含错误信息，还记录了具体是哪个字段验证失败，
+// 展示了如何通过结构体携带更丰富的错误上下文。
 type ValidationError struct {
-    Field   string
-    Message string
+	Field   string // 验证失败的字段名称（例如 "username" 或 "age"）
+	Message string // 具体的错误描述（例如 "不能为空" 或 "必须大于18"）
 }
 
+// Error 实现 error 接口
+// ----------------------------------------
+// 任何实现了 Error() string 方法的类型都可以被视为 error 类型。
+// 这里我们将 ValidationError 结构体适配为标准的 error 接口。
+//
+// 方法接收者 (Method Receiver) 语法说明：
+// ========================================
+// 这里的 (e ValidationError) 表示 Error() 方法属于 ValidationError 类型。
+//
+//  1. 语法解释
+//     func (e ValidationError) Error() string { ... }
+//     - e : 接收者的变量名（类似于其他语言中的 this 或 self）
+//     - ValidationError : 接收者的类型
+//
+//  2. 与普通函数对比
+//     | 类型     | 语法定义                                 | 调用方式      |
+//     | :------- | :--------------------------------------- | :------------ |
+//     | 普通函数 | func Error() string                      | Error()       |
+//     | 方法     | func (e ValidationError) Error() string  | e.Error()     |
 func (e ValidationError) Error() string {
-    return fmt.Sprintf("验证错误 %s: %s", e.Field, e.Message)
+	// 格式化并返回易读的错误字符串
+	return fmt.Sprintf("验证错误 [字段: %s]: %s", e.Field, e.Message)
 }
 
 // 带自定义错误的函数
