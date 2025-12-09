@@ -405,13 +405,35 @@ func (e ValidationError) Error() string {
 }
 
 // 带自定义错误的函数
+// ========================================
+// validateAge 演示如何使用自定义错误类型进行业务逻辑验证。
+// 它展示了 Go 中将领域规则封装在验证函数中的惯用模式。
+//
+// 函数签名解读：
+//   - validateAge(age int) : 接收一个整数类型的年龄参数
+//   - error               : 返回标准的 error 接口类型
+//
+// 返回值说明：
+//   - 验证通过时返回 nil（表示无错误）
+//   - 验证失败时返回 ValidationError 结构体（实现了 error 接口）
+//
+// 这种设计的优势：
+//  1. 类型安全：调用者可以通过类型断言获取详细的错误信息
+//  2. 可扩展性：可以轻松添加更多验证规则
+//  3. 可测试性：每个验证规则都可以独立测试
 func validateAge(age int) error {
+	// 验证规则 1：年龄不能为负数
 	if age < 0 {
+		// 返回自定义错误，携带字段名和具体错误描述
+		// 这样调用者既可以使用 err.Error() 获取格式化的错误信息，
+		// 也可以通过类型断言访问 Field 和 Message 字段
 		return ValidationError{Field: "age", Message: "年龄不能为负数"}
 	}
+	// 验证规则 2：年龄不能超过合理范围
 	if age > 150 {
 		return ValidationError{Field: "age", Message: "年龄似乎不现实"}
 	}
+	// 所有验证通过，返回 nil 表示成功
 	return nil
 }
 
