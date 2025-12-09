@@ -434,6 +434,7 @@ func validateAge(age int) error {
 		return ValidationError{Field: "age", Message: "年龄似乎不现实"}
 	}
 	// 所有验证通过，返回 nil 表示成功
+	// 这里的 nil 会被解释为"一个没有具体值的 error 接口"，表示没有错误发生
 	return nil
 }
 
