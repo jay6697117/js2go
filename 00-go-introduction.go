@@ -382,8 +382,12 @@ type ValidationError struct {
 	Message string // 具体的错误描述
 }
 
+// Error 是 error 接口的唯一方法。
+// 通过为 ValidationError 结构体实现 Error() 方法，
+// 我们就隐式地实现了 Go 的内置 error 接口。
+// 这意味着 ValidationError 的实例可以被赋值给任何 error 类型的变量。
 func (e ValidationError) Error() string {
-	return fmt.Sprintf("验证错误 %s: %s", e.Field, e.Message)
+	return fmt.Sprintf("验证错误 [%s]: %s", e.Field, e.Message)
 }
 
 // 带自定义错误的函数
