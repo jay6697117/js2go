@@ -544,28 +544,67 @@ func fetchData(url string) ([]byte, error) {
 }
 
 func main() {
-	safeDivide(10, 2) // 结果: 5
-	safeDivide(10, 0) // 错误: 除零错误
+	// 示例 1: 基本错误处理模式
+	// ----------------------------------------
+	// 调用 safeDivide 函数，它内部演示了"卫语句"（Guard Clause）模式
+	// 这种模式在 Go 中非常常见：立即检查错误并处理，保持主逻辑的简洁
+	safeDivide(10, 2) // 正常情况：输出结果 5
+	safeDivide(10, 0) // 错误情况：输出错误信息
 
+	// 示例 2: if 语句中的简短变量声明
+	// ----------------------------------------
+	// 语法特点：if <初始化语句>; <条件表达式> { ... }
+	//
+	// 这里 err := validateAge(-5) 是初始化语句：
+	//   1. 先执行 validateAge(-5)
+	//   2. 将返回值赋给新变量 err
+	//   3. err 的作用域仅限于这个 if-else 代码块内
+	//
+	// 这种写法的优势：
+	//   - 限制了 err 变量的作用域，避免污染外部作用域
+	//   - 代码更加紧凑，逻辑更加连贯
 	if err := validateAge(-5); err != nil {
+		// 这里 err 不为 nil，说明验证失败
+		// %v 会打印错误的默认格式
 		fmt.Printf("验证错误: %v\n", err)
 	}
 
+	// 再次演示简短变量声明，这次使用不同的变量名或复用（但在不同作用域）
+	// 注意：这里的 err 是一个新的变量，与上面的 err 无关
 	if err := validateAge(200); err != nil {
 		fmt.Printf("验证错误: %v\n", err)
 	}
 
-	// 测试 fetchData：访问 GitHub API
+	// 示例 3: 综合应用 - HTTP 请求与数据处理
+	// ----------------------------------------
+	// 演示真实场景下的错误处理流程：
+	//   1. 发起请求
+	//   2. 检查错误
+	//   3. 处理结果
 	fmt.Println("\n--- 测试 fetchData ---")
+
+	// 调用 fetchData 获取 GitHub 用户信息
+	// data: 响应内容的字节切片 ([]byte)
+	// err : 可能发生的错误
 	data, err := fetchData("https://api.github.com/users/octocat")
+
+	// 检查请求是否成功
 	if err != nil {
+		// 如果发生错误（如断网、域名解析失败、404等），打印错误并结束当前逻辑
 		fmt.Printf("请求失败: %v\n", err)
 	} else {
-		// 打印前 200 个字符（避免输出过长）
+		// 请求成功，处理返回的数据
+		// ----------------------------------------------------
+		// 1. 将字节切片转换为字符串，以便打印
 		output := string(data)
+
+		// 2. 简单的截断处理：避免控制台输出过长内容
+		//    由于 GitHub API 返回的 JSON 可能很长，这里只展示前 200 个字符
 		if len(output) > 200 {
 			output = output[:200] + "..."
 		}
+
+		// 3. 打印最终结果
 		fmt.Printf("GitHub API 响应:\n%s\n", output)
 	}
 }
