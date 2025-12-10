@@ -439,22 +439,107 @@ func validateAge(age int) error {
 }
 
 // 带错误处理的 HTTP 请求
+// ========================================
+// fetchData 演示了 Go 中进行 HTTP 请求的标准模式，包含完整的错误处理。
+// 这是一个同步请求函数，会阻塞直到请求完成或发生错误。
+//
+// 函数签名解读：
+//   - fetchData(url string)  : 接收一个 URL 字符串作为参数
+//   - ([]byte, error)        : 返回响应体的字节切片和可能的错误
+//
+// 核心知识点：
+//  1. http.Get()     : 标准库提供的便捷 HTTP GET 请求方法
+//  2. defer 语句     : 延迟执行，确保资源正确释放
+//  3. 错误包装 (%w)  : Go 1.13+ 引入的错误链机制
+//  4. io.ReadAll()   : 读取整个响应体到内存
 func fetchData(url string) ([]byte, error) {
+	// http.Get 是 net/http 包提供的便捷函数
+	// ----------------------------------------
+	// 它是 http.DefaultClient.Get(url) 的简写形式
+	// 返回值：
+	//   - resp *http.Response : HTTP 响应对象，包含状态码、响应头、响应体等
+	//   - err error           : 网络错误（如 DNS 解析失败、连接超时、TLS 握手失败等）
+	//
+	// 注意：即使服务器返回 4xx 或 5xx 状态码，只要网络通信成功，err 仍为 nil
+	// 因此需要单独检查 resp.StatusCode
 	resp, err := http.Get(url)
+
+	// 错误检查：网络层面的错误
+	// ----------------------------------------
+	// 这里捕获的是网络传输层面的错误，例如：
+	//   - 无法解析域名（DNS 错误）
+	//   - 无法建立 TCP 连接（目标主机不可达）
+	//   - TLS/SSL 证书验证失败
+	//   - 请求超时
 	if err != nil {
+		// fmt.Errorf 配合 %w 动词进行错误包装 (Error Wrapping)
+		// ----------------------------------------
+		// %w 是 Go 1.13 引入的特殊格式化动词，用于包装错误。
+		// 它的作用：
+		//   1. 保留原始错误信息（可通过 errors.Unwrap() 获取）
+		//   2. 添加上下文描述，使错误信息更具可读性
+		//   3. 支持 errors.Is() 和 errors.As() 进行错误链检查
+		//
+		// 对比其他方式：
+		//   - %v : 只保留错误字符串，丢失原始错误类型
+		//   - %w : 保留完整错误链，可追溯根因
 		return nil, fmt.Errorf("获取数据失败: %w", err)
 	}
+
+	// defer 延迟执行：资源清理的最佳实践
+	// ========================================
+	// defer 关键字确保 resp.Body.Close() 在函数返回前执行，无论是正常返回还是发生错误。
+	//
+	// 为什么必须关闭 resp.Body？
+	//   1. resp.Body 是一个 io.ReadCloser，底层持有网络连接资源
+	//   2. 不关闭会导致连接泄漏，最终耗尽系统的文件描述符
+	//   3. http.Transport 默认维护连接池，关闭 Body 后连接可被复用
+	//
+	// defer 的执行时机：
+	//   - 在包含它的函数返回时执行（不是当前代码块）
+	//   - 多个 defer 按 LIFO（后进先出）顺序执行
+	//   - 即使发生 panic，defer 仍会执行（用于资源清理）
+	//
+	// 最佳实践：在获取需要关闭的资源后，立即使用 defer 声明关闭操作
 	defer resp.Body.Close()
 
+	// HTTP 状态码检查
+	// ----------------------------------------
+	// http.StatusOK 是常量 200，表示请求成功。
+	// 常见的 HTTP 状态码常量：
+	//   - http.StatusOK           (200) : 成功
+	//   - http.StatusCreated      (201) : 资源创建成功
+	//   - http.StatusBadRequest   (400) : 客户端请求错误
+	//   - http.StatusUnauthorized (401) : 未认证
+	//   - http.StatusForbidden    (403) : 禁止访问
+	//   - http.StatusNotFound     (404) : 资源不存在
+	//   - http.StatusInternalServerError (500) : 服务器内部错误
+	//
+	// 注意：3xx 重定向状态码通常由 http.Client 自动处理（默认最多跟随 10 次重定向）
 	if resp.StatusCode != http.StatusOK {
+		// %d 格式化动词用于输出十进制整数
 		return nil, fmt.Errorf("HTTP 错误! 状态: %d", resp.StatusCode)
 	}
 
+	// 读取响应体
+	// ----------------------------------------
+	// io.ReadAll (Go 1.16+) 从 Reader 中读取所有数据直到 EOF。
+	// 在 Go 1.15 及更早版本中，使用 ioutil.ReadAll（现已弃用）。
+	//
+	// 返回值：
+	//   - body []byte : 响应体的完整内容
+	//   - err error   : 读取过程中发生的错误（如连接中断）
+	//
+	// 注意事项：
+	//   1. ReadAll 会将整个响应体加载到内存，对于大文件可能导致 OOM
+	//   2. 对于大文件，应使用流式处理（io.Copy 或分块读取）
+	//   3. 响应体只能读取一次，因为它是一个流（io.Reader）
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("读取响应失败: %w", err)
 	}
 
+	// 成功：返回响应体数据和 nil 错误
 	return body, nil
 }
 
