@@ -1,12 +1,12 @@
 // Go: 运算符
-package demo
+package syntaxComparison
 
 import (
 	"fmt"
 	"math"
 )
 
-func syntaxComparison() {
+func SyntaxComparison() {
 	a, b := 10, 3
 
 	// 算术

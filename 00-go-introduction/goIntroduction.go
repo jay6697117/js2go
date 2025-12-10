@@ -311,7 +311,7 @@
 // }
 
 // 6. Go: 错误处理
-package demo
+package goIntroduction
 
 import (
 	"errors"
@@ -543,7 +543,7 @@ func fetchData(url string) ([]byte, error) {
 	return body, nil
 }
 
-func goIntroduction() {
+func GoIntroduction() {
 	// 示例 1: 基本错误处理模式
 	// ----------------------------------------
 	// 调用 safeDivide 函数，它内部演示了"卫语句"（Guard Clause）模式

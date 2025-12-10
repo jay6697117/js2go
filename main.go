@@ -1,7 +1,12 @@
 // main.go
 package main
 
+import (
+	"my-go-project/goIntroduction"
+	"my-go-project/syntaxComparison"
+)
+
 func main() {
-	// 调用 utils 包里的 SayHello 函数
-	goIntroduction()
+	goIntroduction.GoIntroduction()
+	syntaxComparison.SyntaxComparison()
 }
