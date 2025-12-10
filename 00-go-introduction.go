@@ -586,7 +586,7 @@ func main() {
 	// 调用 fetchData 获取 GitHub 用户信息
 	// data: 响应内容的字节切片 ([]byte)
 	// err : 可能发生的错误
-	data, err := fetchData("https://api.github.com/users/octocat")
+	data, err := fetchData("https://api.github.com/users/jay6697117")
 
 	// 检查请求是否成功
 	if err != nil {
@@ -600,8 +600,8 @@ func main() {
 
 		// 2. 简单的截断处理：避免控制台输出过长内容
 		//    由于 GitHub API 返回的 JSON 可能很长，这里只展示前 200 个字符
-		if len(output) > 200 {
-			output = output[:200] + "..."
+		if len(output) > 2000 {
+			output = output[:2000] + "..."
 		}
 
 		// 3. 打印最终结果
