@@ -1,9 +1,13 @@
 package calculatorapp
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"os"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 // calculate 执行运算
@@ -28,20 +32,47 @@ func CalculateFunc(a, b float64, operator string) (float64, error) {
 }
 
 func CalculateExecute() {
-	var num1, num2 float64
-	var operator string
-
-	fmt.Println("简易计算器 (格式: 数字 运算符 数字，例如: 10 + 2)")
+	fmt.Println("简易计算器 (支持格式: 10+2, 10 + 2, 10.5 * 2 等)")
 	fmt.Print("请输入: ")
 
-	// 1. 处理用户输入
-	// fmt.Scan 会自动根据空格分割输入并解析到对应的变量地址中
-	_, err := fmt.Scan(&num1, &operator, &num2)
-
-	// 2. 输入错误处理
+	// 1. 读取用户输入 (整行读取)
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("输入错误: 请确保格式正确 (数字 空格 运算符 空格 数字)")
-		// 非零状态码退出表示程序异常结束
+		fmt.Println("读取输入失败:", err)
+		os.Exit(1)
+	}
+
+	// 去除首尾空格
+	input = strings.TrimSpace(input)
+
+	// 2. 使用正则表达式解析输入
+	// 正则说明:
+	// ^\s*             : 开头可能有空格
+	// (-?\d+(?:\.\d+)?) : 第一个数字 (支持负数和小数)
+	// \s*              : 可能有空格
+	// ([\+\-\*\/])     : 运算符 (+, -, *, /)
+	// \s*              : 可能有空格
+	// (-?\d+(?:\.\d+)?) : 第二个数字 (支持负数和小数)
+	// \s*$             : 结尾可能有空格
+	re := regexp.MustCompile(`^\s*(-?\d+(?:\.\d+)?)\s*([\+\-\*\/])\s*(-?\d+(?:\.\d+)?)\s*$`)
+	matches := re.FindStringSubmatch(input)
+
+	if len(matches) != 4 {
+		fmt.Println("输入格式错误: 请输入类似 10+2 或 10 + 2 的格式")
+		os.Exit(1)
+	}
+
+	// 解析数字和运算符
+	num1Str := matches[1]
+	operator := matches[2]
+	num2Str := matches[3]
+
+	num1, err1 := strconv.ParseFloat(num1Str, 64)
+	num2, err2 := strconv.ParseFloat(num2Str, 64)
+
+	if err1 != nil || err2 != nil {
+		fmt.Println("数字解析错误")
 		os.Exit(1)
 	}
 
