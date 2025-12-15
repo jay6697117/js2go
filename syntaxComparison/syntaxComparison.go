@@ -1,12 +1,12 @@
 // Go: 运算符
-package syntaxComparison
+package syntaxcomparison
 
 import (
 	"fmt"
 	"math"
 )
 
-func SyntaxComparison() {
+func syntaxComparison() {
 	a, b := 10, 3
 
 	// 1. 算术运算符 (Arithmetic Operators)

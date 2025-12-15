@@ -2,11 +2,11 @@
 package main
 
 import (
-	"my-go-project/goIntroduction"
-	"my-go-project/syntaxComparison"
+	"my-go-project/gointroduction"
+	"my-go-project/syntaxcomparison"
 )
 
 func main() {
-	goIntroduction.GoIntroduction()
-	syntaxComparison.SyntaxComparison()
+	gointroduction.goIntroduction()
+	syntaxcomparison.syntaxComparison()
 }
