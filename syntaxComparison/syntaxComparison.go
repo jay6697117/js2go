@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-func syntaxComparison() {
+func SyntaxComparison() {
 	a, b := 10, 3
 
 	// 1. 算术运算符 (Arithmetic Operators)

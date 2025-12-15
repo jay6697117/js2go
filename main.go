@@ -1,12 +1,13 @@
 // main.go
 package main
 
-import (
-	"my-go-project/gointroduction"
-	"my-go-project/syntaxcomparison"
-)
+import "my-go-project/calculatorapp"
+
+// "my-go-project/calculatorapp"
+// "my-go-project/gointroduction"
 
 func main() {
-	gointroduction.goIntroduction()
-	syntaxcomparison.syntaxComparison()
+	// gointroduction.GoIntroduction()
+	// syntaxcomparison.SyntaxComparison()
+	calculatorapp.CalculateExecute()
 }
